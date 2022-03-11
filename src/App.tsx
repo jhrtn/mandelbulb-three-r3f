@@ -3,13 +3,7 @@ import { useRef, Suspense, useMemo } from 'react';
 import * as THREE from 'three';
 import { useTexture, OrbitControls, Stats } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
-import {
-  EffectComposer,
-  DepthOfField,
-  Bloom,
-  Noise,
-  Vignette,
-} from '@react-three/postprocessing';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
 import './App.css';
 
@@ -119,7 +113,7 @@ interface MandelBulbProps {
 const Mandelbulb = ({ mandel, needsUpdate }: MandelBulbProps) => {
   const pointsRef = useRef<any>(null!);
 
-  const particleTexture = useTexture(particleTextures[2]);
+  const particleTexture = useTexture(particleTextures[0]);
 
   useFrame(() => {
     if (pointsRef.current && needsUpdate) {
@@ -146,12 +140,11 @@ const Mandelbulb = ({ mandel, needsUpdate }: MandelBulbProps) => {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={12}
+        size={6}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}
-        sizeAttenuation
-        // vertexColors
+        sizeAttenuation={false}
         map={particleTexture}
         alphaMap={particleTexture}
       />
@@ -177,13 +170,14 @@ function App() {
       >
         <color attach="background" args={['black']} />
         <ambientLight />
-        <pointLight intensity={1000} color={0xff0000} position={[10, 10, 10]} />
-        <pointLight
-          intensity={1000}
-          color={0x00ffff}
-          position={[-10, -10, -10]}
+
+        <OrbitControls
+          makeDefault
+          enableZoom={true}
+          enablePan={false}
+          minZoom={140}
+          maxZoom={400}
         />
-        <OrbitControls makeDefault enableZoom={true} enablePan={false} />
         <Suspense fallback={null}>
           <Mandelbulb
             mandel={state.current.points}
@@ -192,15 +186,11 @@ function App() {
         </Suspense>
         <Stats />
         <EffectComposer>
-          {/* <DepthOfField
-            focusDistance={0}
-            focalLength={0.02}
-            bokehScale={2}
-            height={480}
-          /> */}
-          <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
-          <Noise opacity={0.02} />
-          <Vignette eskil={false} offset={0.1} darkness={1.1} />
+          <Bloom
+            luminanceThreshold={0.4}
+            luminanceSmoothing={0.9}
+            height={800}
+          />
         </EffectComposer>
       </Canvas>
     </div>
