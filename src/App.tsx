@@ -111,7 +111,8 @@ interface MandelBulbProps {
 }
 
 const Mandelbulb = ({ mandel, needsUpdate }: MandelBulbProps) => {
-  const pointsRef = useRef<any>(null!);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const pointsRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const particleTexture = useTexture(particleTextures[0]);
 
@@ -168,7 +169,7 @@ function App() {
         orthographic
         camera={{ zoom: 140, position: [0, 0, 100] }}
       >
-        <color attach="background" args={['black']} />
+        <color attach="background" args={[0x1f1d24]} />
         <ambientLight />
 
         <OrbitControls
