@@ -169,7 +169,7 @@ function App() {
         orthographic
         camera={{ zoom: 140, position: [0, 0, 100] }}
       >
-        <color attach="background" args={[0x1f1d24]} />
+        <color attach="background" args={['black']} />
         <ambientLight />
 
         <OrbitControls
@@ -190,7 +190,8 @@ function App() {
           <Bloom
             luminanceThreshold={0.4}
             luminanceSmoothing={0.9}
-            height={800}
+            height={window.innerHeight}
+            width={window.innerWidth}
           />
         </EffectComposer>
       </Canvas>
