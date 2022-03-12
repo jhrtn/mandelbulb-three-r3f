@@ -1,6 +1,78 @@
-.container {
-  min-width: 100vw;
-  min-height: 100%;
+body {
+  background-color: #FAF8F2;
+  padding: 0 64px;
+}
 
-  background-color: black;
+body p {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1F1D24;
+}
+
+body a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1F1D24;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+body a:hover {
+  text-decoration: underline;
+}
+
+.canvas-container {
+
+  padding: 32px;
+  /* margin: 32px; */
+
+  /* max-width: 1000px; */
+  width: 100%;
+  height: 100%;
+  max-height: 720px;
+
+  background-color: #1F1D24;
+
+  
+}
+
+.loader-overylay {
+  position: fixed;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+
+  display: grid;
+  place-content: center;
+}
+
+.loader-overylay p {
+  font-size: 32px;
+  color: #FAF8F2;
+  text-align: center;
+}
+
+.grid-container {
+  height: 100%;
+  width: 100%;
+
+  display: grid;
+  --row-height: 128px;
+  grid-template-rows: var(--row-height) 1fr var(--row-height);
+}
+
+.grid-row-canvas {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-row-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
