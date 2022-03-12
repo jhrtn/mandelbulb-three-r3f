@@ -1,46 +1,15 @@
-# Getting Started with Create React App
+Mandelbulb point cloud created with three.js/react-three-fiber. Ported from Processing code by Daniel Shiffman of The Coding Train: https://thecodingtrain.com/CodingChallenges/168-mandelbulb.html
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This utilises a web worker to do the heavy lifting of the point generation on a separate thread without locking up the UI. This means we can show a nice loading animation whilst the points are generated and send messages to regenerate the point coordinates.
 
-## Available Scripts
+mandelbulb web worker code: https://github.com/jhrtn/mandelbulb-three-r3f/blob/dev/src/lib/points-worker.ts
 
-In the project directory, you can run:
+3d/interface code: https://github.com/jhrtn/mandelbulb-three-r3f/blob/dev/src/App.tsx
 
-### `npm start`
+try it: https://mandelbulb-three-r3f.vercel.app/
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Much of what I know about custom points shaders in three.js comes from this livestream by Yuri Aritukh: https://www.youtube.com/watch?v=qLh12Aav3hs&t=2158s
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+![Screenshot 2022-03-12 at 16 52 20](https://user-images.githubusercontent.com/17256474/158027258-fea37ba9-4473-40e7-a9df-792b2f7f92e1.png)

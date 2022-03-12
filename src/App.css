@@ -1,38 +1,126 @@
-.App {
-  text-align: center;
+/* pls don't judge this very bad and messy css it works ok*/
+
+body {
+  background-color: #FAF8F2;
+  padding: 0 64px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body p, select, label, button {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1F1D24;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body button {
+  background-color: #FAF8F2;
+  border: 1px solid #1F1D24;
+  outline: none;
+  cursor: pointer;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+body select {
+  margin-left: 10px;
+  background-color: #FAF8F2;
+  padding: 2px;
+}
+
+body a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #1F1D24;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+body a:hover {
+  text-decoration: underline;
+}
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  background-color: #1F1D24;
+}
+
+.grid-container {
+  height: 100%;
+  width: 100%;
+
+  display: grid;
+  --row-height: 128px;
+  grid-template-rows: var(--row-height) 1fr var(--row-height);
+}
+
+.grid-row-canvas {
+  width: 100%;
+  height: 100%;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.grid-row-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.loader-outer {
+  position: fixed;
+  
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+
+  width: 200px;
+  height: 200px;
+  margin: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-inner {
+  width: 200px;
+  height: 200px;
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-inner > *{
+  color: #FAF8F2;
+  user-select: none;
+}
+
+.loader-point {
+  height: 2px;
+  width: 2px;
+  position: absolute;
+  z-index: 3;
+  background-color: currentcolor;
+  will-change: transform;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  row-gap: 8px;
+  column-gap: 24px;
+}
+
+.options-grid label {
+  font-size: 14px;
+}
+
+.options-grid .item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
 }
