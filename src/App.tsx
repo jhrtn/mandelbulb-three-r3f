@@ -114,7 +114,7 @@ function App() {
       <div className="grid-container">
         <div className="grid-row-text">
           <p>Mandelbulb Point Cloud // Three.js/R3F</p>
-          <TextLink url="https://github.com/jhrtn/mandelbulb-three-r3f/blob/dev/src/App.tsx">
+          <TextLink url="https://github.com/jhrtn/mandelbulb-three-r3f">
             {'< / >'}
           </TextLink>
         </div>
