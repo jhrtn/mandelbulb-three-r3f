@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import React, { useRef, Suspense, useState, useEffect } from 'react';
+import React, {
+  useRef,
+  Suspense,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import * as THREE from 'three';
 import { useTexture, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { useSpring, animated, config } from '@react-spring/web';
 
-import { WorkerBuilder, PointsWorker } from './lib/points-worker';
 import { fragmentShader, vertexShader } from './lib/customShader';
+import {
+  WorkerBuilder,
+  PointsWorker,
+  MandelbulbParams,
+} from './lib/points-worker';
 
 import './App.css';
 
@@ -21,7 +32,6 @@ const Mandelbulb = ({ mandel }: MandelBulbProps) => {
   const shaderRef = useRef<THREE.ShaderMaterial>(null!);
   const geoRef = useRef<any>(null!);
 
-  const particleTexture = useTexture('textures/1.png');
   useFrame((state) => {
     if (pointsRef.current)
       pointsRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
@@ -138,11 +148,22 @@ const Scene = ({ points }: { points: Float32Array }) => {
 
 const workerInstance = WorkerBuilder(PointsWorker);
 
+type AppState =
+  | 'GENERATING'
+  | 'UNSUPPORTED'
+  | 'LOADED'
+  | 'INITIALISING'
+  | 'ERROR';
+
+const initialState: MandelbulbParams = {
+  nPower: 8,
+  maxIterations: 80,
+  dim: 64,
+};
+
 function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [status, setStatus] = useState<
-    'GENERATING' | 'UNSUPPORTED' | 'LOADED' | 'INITIALISING'
-  >('INITIALISING');
+  const [status, setStatus] = useState<AppState>('INITIALISING');
   const [points, setPoints] = useState<Float32Array | null>();
 
   useEffect(() => {
@@ -151,20 +172,30 @@ function App() {
         setPoints(message.data);
         setStatus('LOADED');
       }
+
+      if (typeof message.data == 'string') {
+        if (message.data == 'ERROR') setStatus('ERROR');
+      }
     };
 
     if (workerInstance) {
       setStatus('GENERATING');
       setTimeout(() => {
-        sendMessage();
+        regenerateMandelbulb(initialState);
       }, 100);
     } else {
       setStatus('UNSUPPORTED');
     }
   }, []);
 
-  const sendMessage = () => {
-    workerInstance.postMessage('GENERATE_POINTS');
+  console.log(status);
+
+  const regenerateMandelbulb = (d: MandelbulbParams) => {
+    setStatus('GENERATING');
+    workerInstance.postMessage({
+      type: 'GENERATE_POINTS',
+      data: d,
+    });
   };
 
   return (
@@ -182,21 +213,122 @@ function App() {
           </div>
         </div>
         <div className="grid-row-text">
-          <TextLink url="https://thecodingtrain.com/CodingChallenges/168-mandelbulb.html">
-            Ported from Daniel Shiffman&apos;s Processing code
-          </TextLink>
-          <TextLink url="https://hort.onl">by Joseph Horton</TextLink>
+          <Options
+            onSave={regenerateMandelbulb}
+            isGenerating={status == 'GENERATING'}
+          />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              flexDirection: 'column',
+            }}
+          >
+            <TextLink url="https://thecodingtrain.com/CodingChallenges/168-mandelbulb.html">
+              Ported from Daniel Shiffman&apos;s Processing code
+            </TextLink>
+            <TextLink url="https://hort.onl">by Joseph Horton</TextLink>
+          </div>
         </div>
       </div>
       {status === 'GENERATING' && <Loader />}
       {status === 'UNSUPPORTED' && (
-        <p>Sorry, Web Workers are not supported in your browser</p>
+        <Centered>
+          <p>Sorry, Web Workers are not supported in your browser</p>
+        </Centered>
+      )}
+      {status === 'ERROR' && (
+        <Centered>
+          <p style={{ color: '#f78888' }}>
+            There was an issue generating those points. Please try again.
+          </p>
+        </Centered>
       )}
     </>
   );
 }
 
 export default App;
+
+interface OptionsProps {
+  onSave: (m: MandelbulbParams) => void;
+  isGenerating: boolean;
+}
+
+const Options = ({ onSave, isGenerating }: OptionsProps) => {
+  const nPowerOptions = [2, 4, 6, 8, 12, 16, 32];
+  const maxIterationsOptions = [10, 20, 32, 64, 128, 256];
+  const dimOptions = [16, 24, 32, 64, 128, 256];
+  const [value, setValue] = useState<MandelbulbParams>({
+    nPower: 8,
+    maxIterations: 80,
+    dim: 64,
+  });
+
+  const handleOnSave = () => {
+    console.log('call on save with values', value);
+    onSave(value);
+  };
+
+  return (
+    <div className="options-grid">
+      <div className="item">
+        <label>N Power</label>
+        <select
+          value={value.nPower}
+          onChange={(e) =>
+            setValue({ ...value, nPower: parseInt(e.target.value) })
+          }
+        >
+          {nPowerOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="item">
+        <label>Max Iterations</label>
+        <select
+          disabled={false}
+          value={value.maxIterations}
+          onChange={(e) =>
+            setValue({ ...value, maxIterations: parseInt(e.target.value) })
+          }
+        >
+          {maxIterationsOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="item">
+        <label>Dimension</label>
+        <select
+          disabled={false}
+          value={value.dim}
+          onChange={(e) =>
+            setValue({ ...value, dim: parseInt(e.target.value) })
+          }
+        >
+          {dimOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button
+        disabled={isGenerating}
+        onClick={handleOnSave}
+        style={{ opacity: isGenerating ? 0.4 : 1.0 }}
+      >
+        update
+      </button>
+    </div>
+  );
+};
 
 const TextLink = ({
   url,
@@ -208,6 +340,12 @@ const TextLink = ({
   <a href={url} target="_blank" rel="noreferrer">
     {children}
   </a>
+);
+
+const Centered = ({ children }: { children: React.ReactChild }) => (
+  <div className="loader-outer">
+    <div className="loader-inner">{children}</div>
+  </div>
 );
 
 const randPoints: number[] = Array.from({ length: 20 }, (_, i) => i);
@@ -229,6 +367,7 @@ const newPos = () => ({
   x: (Math.random() - 0.5) * 200,
   y: (Math.random() - 0.5) * 200,
 });
+
 const LoaderPoint = ({ index }: { index: number }) => {
   const [pos, setPos] = useState(() => newPos());
   const { x, y, opacity } = useSpring({
