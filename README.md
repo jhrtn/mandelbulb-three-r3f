@@ -9,4 +9,7 @@ mandelbulb web worker code: https://github.com/jhrtn/mandelbulb-three-r3f/blob/d
 try it: https://mandelbulb-three-r3f.vercel.app/
 
 
+Much of what I know about custom points shaders in three.js comes from this livestream by Yuri Aritukh: https://www.youtube.com/watch?v=qLh12Aav3hs&t=2158s
+
+
 ![Screenshot 2022-03-12 at 16 52 20](https://user-images.githubusercontent.com/17256474/158027258-fea37ba9-4473-40e7-a9df-792b2f7f92e1.png)

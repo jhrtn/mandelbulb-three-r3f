@@ -7,6 +7,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { useSpring, animated, config } from '@react-spring/web';
 
 import { WorkerBuilder, PointsWorker } from './lib/points-worker';
+import { fragmentShader, vertexShader } from './lib/customShader';
 
 import './App.css';
 
@@ -17,24 +18,80 @@ interface MandelBulbProps {
 const Mandelbulb = ({ mandel }: MandelBulbProps) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const pointsRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const shaderRef = useRef<THREE.ShaderMaterial>(null!);
+  const geoRef = useRef<any>(null!);
 
   const particleTexture = useTexture('textures/1.png');
   useFrame((state) => {
     if (pointsRef.current)
       pointsRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
+
+    if (shaderRef.current) {
+      shaderRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
+    }
   });
+
+  const shaderData = useMemo(
+    () => ({
+      uniforms: {
+        uTime: { value: 0.0 },
+        uCol1: { value: new THREE.Color(0xf6b6b6) },
+        uCol2: { value: new THREE.Color(0xf5e076) },
+        uCol3: { value: new THREE.Color(0xf4b04a) },
+      },
+      fragmentShader,
+      vertexShader,
+    }),
+    []
+  );
+
+  const sizeAtt = useMemo(
+    () =>
+      Float32Array.from(
+        Array.from({ length: mandel.length / 3 }, () => Math.random())
+      ),
+    []
+  );
+
+  const update = useCallback((el: THREE.BufferAttribute) => {
+    el.set(sizeAtt);
+    el.needsUpdate = true;
+  }, []);
 
   return (
     <points ref={pointsRef}>
-      <bufferGeometry>
+      <bufferGeometry ref={geoRef}>
         <bufferAttribute
           attachObject={['attributes', 'position']}
           array={mandel}
           count={mandel.length / 3}
           itemSize={3}
         />
+        <bufferAttribute
+          attachObject={['attributes', 'sizeAttenuation']}
+          count={sizeAtt.length}
+          itemSize={1}
+          array={sizeAtt}
+          onUpdate={update}
+        />
       </bufferGeometry>
-      <pointsMaterial
+      <shaderMaterial
+        ref={shaderRef}
+        attach="material"
+        vertexColors
+        blending={THREE.AdditiveBlending}
+        transparent
+        depthTest={false}
+        depthWrite={false}
+        args={[
+          {
+            uniforms: shaderData.uniforms,
+            vertexShader: shaderData.vertexShader,
+            fragmentShader: shaderData.fragmentShader,
+          },
+        ]}
+      />
+      {/* <pointsMaterial
         size={6}
         transparent
         depthWrite={false}
@@ -42,7 +99,7 @@ const Mandelbulb = ({ mandel }: MandelBulbProps) => {
         sizeAttenuation={false}
         map={particleTexture}
         alphaMap={particleTexture}
-      />
+      /> */}
     </points>
   );
 };
@@ -50,7 +107,7 @@ const Mandelbulb = ({ mandel }: MandelBulbProps) => {
 const Scene = ({ points }: { points: Float32Array }) => {
   return (
     <Canvas
-      // dpr={[1, 2]}
+      dpr={[1, 2]}
       orthographic
       camera={{ zoom: 140, position: [0, 0, 100] }}
     >
@@ -68,6 +125,7 @@ const Scene = ({ points }: { points: Float32Array }) => {
       {/* <Stats /> */}
       <EffectComposer>
         <Bloom
+          intensity={0.1}
           luminanceThreshold={0.4}
           luminanceSmoothing={0.9}
           height={window.innerHeight}
