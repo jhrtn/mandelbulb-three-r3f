@@ -10,6 +10,17 @@ interface Coord {
   z: number;
 }
 
+export interface MandelbulbParams {
+  maxIterations: number;
+  dim: number;
+  nPower: number;
+}
+
+interface GPMessage {
+  type: 'GENERATE_POINTS';
+  data: MandelbulbParams;
+}
+
 export const PointsWorker = () => {
   // borrowed from p5js as all code must be contained within worker
   const mapRange = (
@@ -41,15 +52,16 @@ export const PointsWorker = () => {
     return { r, theta, phi };
   };
 
-  self.onmessage = (message) => {
-    const data = message.data;
+  self.onmessage = (message: MessageEvent<GPMessage>) => {
+    const { type, data } = message.data;
 
-    if (data === 'GENERATE_POINTS') {
+    if (type === 'GENERATE_POINTS') {
+      const { dim, nPower, maxIterations } = data;
       const { pow, sin, cos } = Math;
 
       const posOffset = 1.0;
 
-      const dim = 128;
+      // const dim = 128;
 
       const points: number[] = [];
 
@@ -63,8 +75,8 @@ export const PointsWorker = () => {
 
             const zeta: Coord = { x: 0.0, y: 0.0, z: 0.0 };
 
-            const n = 8;
-            const maxIterations = 20;
+            const n = nPower;
+            // const maxIterations = 128;
             let iteration = 0;
 
             while (true) {
@@ -101,6 +113,8 @@ export const PointsWorker = () => {
 
       const result = new Float32Array(points);
       postMessage(result);
+    } else {
+      postMessage('ERROR');
     }
   };
 };
