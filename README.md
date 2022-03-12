@@ -1,1 +1,3 @@
 Mandelbulb point cloud created with three.js/react-three-fiber. Ported from Processing code by Daniel Shiffman of The Coding Train: https://thecodingtrain.com/CodingChallenges/168-mandelbulb.html
+
+This utilises a web worker to do the heavy lifting of the point generation on a separate thread without locking up the UI. This means we can show a nice loading animation whilst the points are generated and send messages to regenerate the point coordinates.
