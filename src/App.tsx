@@ -31,8 +31,9 @@ interface MandelBulbProps {
 const Mandelbulb = ({ mandel }: MandelBulbProps) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const pointsRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const shaderRef = useRef<THREE.ShaderMaterial>(null!);
-  const geoRef = useRef<any>(null!);
+  const shaderRef = useRef<THREE.ShaderMaterial>(null!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const geoRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   useFrame((state) => {
     if (pointsRef.current)

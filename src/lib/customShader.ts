@@ -1,4 +1,6 @@
 export const fragmentShader = `
+precision mediump float;
+
 varying vec2 vUv;
 varying vec3 vPosition;
 varying float vRandom;
