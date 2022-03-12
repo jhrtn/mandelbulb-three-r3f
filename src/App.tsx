@@ -131,3 +131,46 @@ const TextLink = ({
     {children}
   </a>
 );
+
+const randPoints: number[] = Array.from({ length: 20 }, (_, i) => i);
+
+const Loader = () => {
+  return (
+    <div className="loader-outer">
+      <div className="loader-inner">
+        <p>generating points</p>
+        {randPoints.map((point) => (
+          <LoaderPoint key={point} index={point} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const newPos = () => ({
+  x: (Math.random() - 0.5) * 200,
+  y: (Math.random() - 0.5) * 200,
+});
+const LoaderPoint = ({ index }: { index: number }) => {
+  const [pos, setPos] = useState(() => newPos());
+  const { x, y, opacity } = useSpring({
+    x: pos.x,
+    y: pos.y,
+    opacity: Math.random(),
+    from: { x: pos.y, y: pos.x, opacity: Math.random() },
+    onRest: () => setPos(() => newPos()),
+    config: config.molasses,
+  });
+
+  return (
+    <animated.div
+      className="loader-point"
+      key={index}
+      style={{
+        x,
+        y,
+        opacity,
+      }}
+    />
+  );
+};
