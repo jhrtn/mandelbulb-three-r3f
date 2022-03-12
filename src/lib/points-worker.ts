@@ -42,11 +42,9 @@ export const PointsWorker = () => {
   };
 
   self.onmessage = (message) => {
-    console.log('got message in worker', message);
     const data = message.data;
 
     if (data === 'GENERATE_POINTS') {
-      console.log('generating points');
       const { pow, sin, cos } = Math;
 
       const posOffset = 1.0;
@@ -101,7 +99,6 @@ export const PointsWorker = () => {
         }
       }
 
-      console.log('points func ends');
       const result = new Float32Array(points);
       postMessage(result);
     }

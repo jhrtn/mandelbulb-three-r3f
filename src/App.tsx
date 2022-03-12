@@ -120,17 +120,6 @@ function App() {
         </div>
         <div className="grid-row-canvas">
           <div className="canvas-container">
-            <button
-              style={{
-                position: 'fixed',
-                top: '200px',
-                left: '200px',
-                zIndex: 3,
-              }}
-              onClick={sendMessage}
-            >
-              send message
-            </button>
             {status === 'LOADED' && points && <Scene points={points} />}
           </div>
         </div>
