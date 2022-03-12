@@ -8,10 +8,9 @@ import React, {
   useCallback,
 } from 'react';
 import * as THREE from 'three';
-import { useTexture, OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import { useSpring, animated, config } from '@react-spring/web';
 
 import { fragmentShader, vertexShader } from './lib/customShader';
 import {
@@ -104,15 +103,6 @@ const Mandelbulb = ({ mandel }: MandelBulbProps) => {
           },
         ]}
       />
-      {/* <pointsMaterial
-        size={6}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        sizeAttenuation={false}
-        map={particleTexture}
-        alphaMap={particleTexture}
-      /> */}
     </points>
   );
 };
