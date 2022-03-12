@@ -5,89 +5,9 @@ import { useTexture, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
+import { WorkerBuilder, PointsWorker } from './lib/points-worker';
+
 import './App.css';
-
-interface Spherical {
-  r: number;
-  theta: number;
-  phi: number;
-}
-
-interface Coord {
-  x: number;
-  y: number;
-  z: number;
-}
-
-const toSpherical = (x: number, y: number, z: number): Spherical => {
-  const r = Math.sqrt(x * x + y * y + z * z);
-  const theta = Math.atan2(Math.sqrt(x * x + y * y), z);
-  const phi = Math.atan2(y, x);
-  return { r, theta, phi };
-};
-
-const createMandel = (): Promise<Float32Array> => {
-  const { mapLinear } = THREE.MathUtils;
-  const { pow, sin, cos } = Math;
-
-  const posOffset = 1.0;
-
-  const dim = 128;
-
-  const points: number[] = [];
-
-  const pointsPromise = new Promise<Float32Array>((resolve) => {
-    for (let i = 0; i < dim; i++) {
-      for (let j = 0; j < dim; j++) {
-        let isEdge = false;
-        for (let k = 0; k < dim; k++) {
-          const x = mapLinear(i, 0, dim, -posOffset, posOffset);
-          const y = mapLinear(j, 0, dim, -posOffset, posOffset);
-          const z = mapLinear(k, 0, dim, -posOffset, posOffset);
-
-          const zeta: Coord = { x: 0.0, y: 0.0, z: 0.0 };
-
-          const n = 8;
-          const maxIterations = 20;
-          let iteration = 0;
-
-          while (true) {
-            const { r, theta, phi } = toSpherical(zeta.x, zeta.y, zeta.z);
-
-            const newx = pow(r, n) * sin(theta * n) * cos(phi * n);
-            const newy = pow(r, n) * sin(theta * n) * sin(phi * n);
-            const newz = pow(r, n) * cos(theta * n);
-
-            zeta.x = newx + x;
-            zeta.y = newy + y;
-            zeta.z = newz + z;
-
-            iteration++;
-
-            if (r > 2) {
-              if (isEdge) {
-                isEdge = false;
-              }
-              break;
-            }
-
-            if (iteration > maxIterations) {
-              if (!isEdge) {
-                isEdge = true;
-                points.push(zeta.x, zeta.y, zeta.z);
-              }
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    resolve(new Float32Array(points));
-  });
-
-  return pointsPromise;
-};
 
 interface MandelBulbProps {
   mandel: Float32Array;
