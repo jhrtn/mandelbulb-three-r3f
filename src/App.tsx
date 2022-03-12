@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { useTexture, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { useSpring, animated, config } from '@react-spring/web';
 
 import { WorkerBuilder, PointsWorker } from './lib/points-worker';
 
@@ -77,34 +78,60 @@ const Scene = ({ points }: { points: Float32Array }) => {
   );
 };
 
+const workerInstance = WorkerBuilder(PointsWorker);
+
 function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<
+    'GENERATING' | 'UNSUPPORTED' | 'LOADED' | 'INITIALISING'
+  >('INITIALISING');
   const [points, setPoints] = useState<Float32Array | null>();
+
   useEffect(() => {
-    createMandel().then((result) => {
-      setPoints(result);
-      setLoading(false);
-    });
+    workerInstance.onmessage = (message) => {
+      if (typeof message.data == 'object') {
+        setPoints(message.data);
+        setStatus('LOADED');
+      }
+    };
+
+    if (workerInstance) {
+      setStatus('GENERATING');
+      setTimeout(() => {
+        sendMessage();
+      }, 100);
+    } else {
+      setStatus('UNSUPPORTED');
+    }
   }, []);
+
+  const sendMessage = () => {
+    workerInstance.postMessage('GENERATE_POINTS');
+  };
 
   return (
     <>
-      {/* {true && (
-        <div className="loader-overylay">
-          <p>generating mandelbulb points...</p>
-        </div>
-      )} */}
       <div className="grid-container">
         <div className="grid-row-text">
           <p>Mandelbulb Point Cloud // Three.js/R3F</p>
-          <TextLink url="https://github.com/jhrtn/mandelbulb-three-r3f">
+          <TextLink url="https://github.com/jhrtn/mandelbulb-three-r3f/blob/dev/src/App.tsx">
             {'< / >'}
           </TextLink>
         </div>
         <div className="grid-row-canvas">
           <div className="canvas-container">
-            {points && <Scene points={points} />}
+            <button
+              style={{
+                position: 'fixed',
+                top: '200px',
+                left: '200px',
+                zIndex: 3,
+              }}
+              onClick={sendMessage}
+            >
+              send message
+            </button>
+            {status === 'LOADED' && points && <Scene points={points} />}
           </div>
         </div>
         <div className="grid-row-text">
@@ -114,6 +141,10 @@ function App() {
           <TextLink url="https://hort.onl">by Joseph Horton</TextLink>
         </div>
       </div>
+      {status === 'GENERATING' && <Loader />}
+      {status === 'UNSUPPORTED' && (
+        <p>Sorry, Web Workers are not supported in your browser</p>
+      )}
     </>
   );
 }
