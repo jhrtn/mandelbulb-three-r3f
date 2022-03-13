@@ -10,7 +10,7 @@ interface OptionsProps {
 const Options = ({ onSave, isGenerating }: OptionsProps) => {
   const nPowerOptions = [2, 4, 6, 8, 12, 16, 32];
   const maxIterationsOptions = [10, 20, 32, 64, 128, 256];
-  const dimOptions = [16, 24, 32, 64, 128, 256];
+  const dimOptions = [16, 24, 32, 64, 128, 160];
   const [value, setValue] = useState<MandelbulbParams>({
     nPower: 8,
     maxIterations: 80,
