@@ -48,9 +48,9 @@ const Mandelbulb = ({ mandel }: MandelBulbProps) => {
     () => ({
       uniforms: {
         uTime: { value: 0.0 },
-        uCol1: { value: new THREE.Color(0xf6b6b6) },
-        uCol2: { value: new THREE.Color(0xf5e076) },
-        uCol3: { value: new THREE.Color(0xf4b04a) },
+        uCol1: { value: new THREE.Color(0xeeee76) },
+        uCol2: { value: new THREE.Color(0x85f76e) },
+        uCol3: { value: new THREE.Color(0xe6691b) },
       },
       fragmentShader,
       vertexShader,
