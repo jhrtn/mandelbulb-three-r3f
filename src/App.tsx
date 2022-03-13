@@ -23,6 +23,7 @@ import './App.css';
 import Options from './Components/Options';
 import Loader from './Components/Loader';
 import { Centered, TextLink } from './Components/Layout';
+import useHitCount from './lib/useHitCount';
 
 interface MandelBulbProps {
   mandel: Float32Array;
@@ -156,11 +157,14 @@ const initialState: MandelbulbParams = {
 };
 
 function App() {
+  const { addHit, addRegen } = useHitCount();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState<AppState>('INITIALISING');
   const [points, setPoints] = useState<Float32Array | null>();
 
   useEffect(() => {
+    addHit();
+
     workerInstance.onmessage = (message) => {
       if (typeof message.data == 'object') {
         setPoints(message.data);
@@ -185,6 +189,7 @@ function App() {
   console.log(status);
 
   const regenerateMandelbulb = (d: MandelbulbParams) => {
+    addRegen();
     setStatus('GENERATING');
     workerInstance.postMessage({
       type: 'GENERATE_POINTS',
