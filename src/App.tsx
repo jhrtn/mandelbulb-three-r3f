@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, {
   useRef,
@@ -30,11 +31,9 @@ interface MandelBulbProps {
 }
 
 const Mandelbulb = ({ mandel }: MandelBulbProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const pointsRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const shaderRef = useRef<THREE.ShaderMaterial>(null!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const geoRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const pointsRef = useRef<THREE.Points>(null!);
+  const shaderRef = useRef<THREE.ShaderMaterial>(null!);
+  const geoRef = useRef<THREE.BufferGeometry>(null!);
 
   useFrame((state) => {
     if (pointsRef.current)
@@ -130,7 +129,7 @@ const Scene = ({ points }: { points: Float32Array }) => {
       {/* <Stats /> */}
       <EffectComposer>
         <Bloom
-          intensity={0.1}
+          intensity={0.6}
           luminanceThreshold={0.4}
           luminanceSmoothing={0.9}
           height={window.innerHeight}

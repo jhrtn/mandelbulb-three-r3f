@@ -35,7 +35,7 @@ void main() {
   vUv = uv;
   vRandom = sizeAttenuation;
   vec4 mvPosition = modelViewMatrix * vec4( position, 1.0);
-  gl_PointSize = (400.0 * sizeAttenuation + 20.0) * (1.0 / -mvPosition.z);
+  gl_PointSize = (1200.0) * (1.0 / -mvPosition.z);
   gl_Position = projectionMatrix * mvPosition;
 }
 `;
